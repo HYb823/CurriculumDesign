@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # CurriculumDesign
 
 This template should help get you started developing with Vue 3 in Vite.
@@ -27,3 +28,7 @@ npm run dev
 ```sh
 npm run build
 ```
+=======
+# CurriculumDesigm
+九周课设
+>>>>>>> fa7d115f37442bbb9708ae82e26f0bb5da383e53
