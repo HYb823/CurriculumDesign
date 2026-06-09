@@ -49,9 +49,9 @@
             />
           </el-form-item>
 
-          <el-form-item prop="real_name" v-if="!isLogin">
+          <el-form-item prop="realName" v-if="!isLogin">
             <el-input
-              v-model="loginForm.real_name"
+              v-model="loginForm.realName"
               placeholder="请输入真实姓名"
             />
           </el-form-item>
@@ -59,7 +59,10 @@
             <el-input v-model="loginForm.age" placeholder="请输入年龄" />
           </el-form-item>
           <el-form-item prop="gender" v-if="!isLogin">
-            <el-input v-model="loginForm.gender" placeholder="请输入性别" />
+            <el-select v-model="loginForm.gender" placeholder="请选择性别">
+              <el-option label="男" value="0"></el-option>
+              <el-option label="女" value="1"></el-option>
+            </el-select>
           </el-form-item>
 
           <!-- 登录/注册 按钮 -->
@@ -94,6 +97,7 @@ import { useRouter } from "vue-router";
 import { Login, Register } from "@/api/user";
 import router from "@/router/index";
 import userStore from "@/stores/userStore";
+const store = userStore();
 
 // 控制登录/注册切换
 const isLogin = ref(true);
@@ -106,9 +110,9 @@ const loginForm = reactive({
   phone: "",
   password: "",
   confirmPwd: "",
-  real_name: "",
-  age: "",
-  gender: "",
+  realName: "",
+  age: null,
+  gender: null,
 });
 
 // 登录校验规则
@@ -150,7 +154,7 @@ const registerRules = {
       trigger: "blur",
     },
   ],
-  real_name: [
+  realName: [
     { required: true, message: "请输入真实姓名", trigger: "blur" },
     {
       pattern: /^[\u4e00-\u9fa5]+$/,
@@ -165,7 +169,7 @@ const registerRules = {
   gender: [
     { required: true, message: "请输入性别", trigger: "blur" },
     {
-      pattern: /^(男|女)$/,
+      pattern: /^[01]$/,
       message: "性别只能输入“男”或“女”",
       trigger: "blur",
     },
@@ -186,41 +190,42 @@ const toggleForm = () => {
 // 统一提交：登录 / 注册
 const handleSubmit = async () => {
   console.log("handleSubmit");
+  console.log("loginForm: ", loginForm);
   const valid = await loginFormRef.value?.validate();
   if (!valid) return;
-
-  if (isLogin.value) {
-    // 登录逻辑（完全保留你原来的写法）
-    await Login(loginForm)
-      .then((res) => {
-        if (res.status === 200) {
-          ElMessage.success("登录成功");
-          userStore.setToken(res.data.token);
-          router.push({ path: "/home" });
-        } else {
-          ElMessage.error(res.message);
-        }
-      })
-      .catch((err) => {
-        console.error(err);
-        ElMessage.error("登录失败，请检查手机号和密码");
-      });
-  } else {
-    // 注册逻辑（和你登录风格保持一致）
-    await Register(loginForm)
-      .then((res) => {
-        if (res.status === 200) {
-          ElMessage.success("注册成功，请登录");
-          isLogin.value = true;
-        } else {
-          ElMessage.error(res.message);
-        }
-      })
-      .catch((err) => {
-        console.error(err);
-        ElMessage.error("注册失败");
-      });
-  }
+  router.push({ path: "/home" });
+  // if (isLogin.value) {
+  //   // 登录逻辑（完全保留你原来的写法）
+  //   await Login(loginForm)
+  //     .then((res) => {
+  //       if (res.status === 200) {
+  //         ElMessage.success("登录成功");
+  //         // userStore.setToken(res.data.token);
+  //         router.push({ path: "/home" });
+  //       } else {
+  //         ElMessage.error(res.message);
+  //       }
+  //     })
+  //     .catch((err) => {
+  //       console.error(err);
+  //       ElMessage.error("登录失败，请检查手机号和密码");
+  //     });
+  // } else {
+  //   // 注册逻辑（和你登录风格保持一致）
+  //   await Register(loginForm)
+  //     .then((res) => {
+  //       if (res.status === 200) {
+  //         ElMessage.success("注册成功，请登录");
+  //         isLogin.value = true;
+  //       } else {
+  //         ElMessage.error(res.message);
+  //       }
+  //     })
+  //     .catch((err) => {
+  //       console.log(res);
+  //       ElMessage.error("注册失败");
+  //     });
+  // }
 };
 </script>
 

@@ -2,7 +2,6 @@ import axios from "axios";
 import userStore from "@/stores/userStore";
 import router from "@/router";
 import { ElMessage } from "element-plus";
-//必须在组件外实例化一次
 
 const baseURL = "http://localhost:8080";
 const instance = axios.create({
@@ -16,7 +15,9 @@ const instance = axios.create({
 instance.interceptors.request.use(
   (config) => {
     if (userStore.token) {
-      config.headers.Authorization = userStore.token;
+      let token = userStore.token; //获取token
+      token = `Bearer ${token}`; //添加前缀
+      config.headers.Authorization = token;
     }
     return config;
   },
@@ -27,7 +28,7 @@ instance.interceptors.request.use(
 
 instance.interceptors.response.use(
   (res) => {
-    console.log("请求成功", res); //这里可以处理响应数据
+    console.log(res);
     if (res.status === 200) {
       return res.data;
     }
@@ -36,7 +37,7 @@ instance.interceptors.response.use(
     return Promise.reject(res);
   },
   (err) => {
-    console.log(err.response.status);
+    console.log(err);
     //处理401错误 权限不足 或token过期 拦截登录
     if (err.response.status === 401) {
       router.push("/login");
